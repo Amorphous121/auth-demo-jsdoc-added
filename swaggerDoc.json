@@ -1,0 +1,1598 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a simple CRUD server",
+        "version": "1.0.0",
+        "title": "Swagger Post & Comment",
+        "contact": {
+            "name": "Prathamesh Patil",
+            "email": "prathmeshp658@gmail.com",
+            "url": "www.iampratham.com"
+        }
+    },
+    "tags": [
+        "User",
+        "Post",
+        "Comment"
+    ],
+    "basePath": "/api/",
+    "schemes": [
+        "http"
+    ],
+    "securityDefinitions": {
+        "jwt": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "security": [
+        {
+            "jwt": []
+        }
+    ],
+    "paths": {
+        "/users/": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summery": "Add a new User to the Database",
+                "description": "Register a new user to the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "operationId": "registerUser",
+                "security": [],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "A User Object that to be added in user collection",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "name",
+                                "password",
+                                "username"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of user"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "description": "Password of User account"
+                                },
+                                "username": {
+                                    "type": "string",
+                                    "description": "Unique username for account of user"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the created user. ",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "role": {
+                                            "type": "string"
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "username": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Returns the validation error message with Status",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns the not found error Message with Status",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summery": "List of users",
+                "description": "Produces a populated list of user with his posts and comments",
+                "operationId": "getUsers",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "No users are left error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Produces a populated list of user with his posts and comments",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "data": {
+                                        "type": "object",
+                                        "properties": {
+                                            "posts": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "title": {
+                                                            "type": "string"
+                                                        },
+                                                        "content": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "comments": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "comment": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "username": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summery": "Login to the system via supplied credentials",
+                "description": "Logs the user with right credentials and generates token for them",
+                "operationId": "userLogIn",
+                "consumes": [
+                    "application/json"
+                ],
+                "security" : [],
+                "produces": [
+                    "appliation/json"
+                ],
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "User credentials for login",
+                        "schema" : {
+                            "type": "object",
+                            "required": [
+                                "password",
+                                "username"
+                            ],
+                            "properties" :{
+                                "password": {
+                                    "type": "string",
+                                    "description": "Password of User account"
+                                },
+                                "username": {
+                                    "type": "string",
+                                    "description": "Unique username for account of user"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User Logged in Successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "User doesn't exists with given credentials.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summery": "Find a user by id",
+                "description": "Returns the Userinfo identified by Id ",
+                "operationId": "getUserById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "An id of the User",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "User doesn't exists with given credentials.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Gets a userinfo identified by Id",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "posts": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "content": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "comments": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "comment": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "username": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summery": "Update an existing User",
+                "description": "Update the user identified by user",
+                "operationId": "updateUser",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "User Id that need to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Updated that need to be applied to specified user",
+                        "schema": {
+                            "$ref": "#/components/definitions/user"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "User doesn't exists with given credentials.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns a user object with updated data.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "username": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summery": "Delete an Exsisting User",
+                "description": "Delete the identified user from database",
+                "operationId": "deleteUser",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "type": "string",
+                        "required": true,
+                        "description": "Id of the user to be deleted"
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns a user doesn't exists error with given credentials.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "400": {
+                        "description": " Returns a validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns a success message of user deletion.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/public/": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "List of posts",
+                "description": "Returns A list of Posts created by users ",
+                "operationId": "getAllPublicPost",
+                "security": [],
+                "produces": [
+                    "appliation/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns the posts doesn't exists error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns a list of post available publically.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {
+                                                "type": "string"
+                                            },
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "content": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/post/public/{id}": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "Object of posts",
+                "description": "Returns an object of posts created by users ",
+                "operationId": "getublicPostById",
+                "security": [],
+                "produces": [
+                    "appliation/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "type": "string",
+                        "required": true,
+                        "description": "An Unique Id of Post"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns the posts doesn't exists error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns an objet of post available publically.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/posts/": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "List of posts",
+                "description": "Returns A list of Posts created by users ",
+                "operationId": "getAllPost",
+                "produces": [
+                    "appliation/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns a post doesn't exists error with given credentials.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the array of posts.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "comments": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "user": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "username": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "comment": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "content": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "Inserts a new post",
+                "description": "Creates a new post in database",
+                "operationId": "createPost",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Created Post object",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "title": {
+                                    "type": "string"
+                                },
+                                "content": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created Post inside database.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    }
+                }
+            }
+        },
+        "/posts/getcomments/{id}" : {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "Returns an object of post with given id. along with comments made on that post.",
+                "description": "Returns an object of post with given id. ",
+                "operationId": "getPostsById",
+                "produces": ["appliation/json"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "type": "string",
+                        "required": true,
+                        "description": "An Unique Id of Post"
+                    }
+                ],
+                "responses" : {
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns a post doesn't exists error with given id.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description" : "Returns an object of post with given id. along with comments made on that post.",
+                        "schema" : {
+                            "type" : "object",
+                            "properties" : {
+                                "status" : { "type" : "boolean" },
+                                "data" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                        "user" : { "type" : "string"},
+                                        "comments" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "object",
+                                                "properties" : {
+                                                    "user" : {
+                                                        "type" : "object",
+                                                        "properties" : {
+                                                            "username" : { "type" : "string" }
+                                                        }
+                                                    },
+                                                    "comment" : { "type" : "string" }
+                                                }
+                                            }
+                                        },
+                                        "_id" : { "type" : "string" },
+                                        "title" : { "type" : "string" },
+                                        "content" : { "type" :"string" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "Returns an object of post with given id.",
+                "description": "Returns an object of post with given id. ",
+                "operationId": "getPostsById",
+                "produces": [
+                    "appliation/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "type": "string",
+                        "required": true,
+                        "description": "An Unique Id of Post"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Returns a post doesn't exists error with given id.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns an object of post with given id.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "username": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "comments": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "user": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "username": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },
+                                                    "_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "comment": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "Update Post by Id",
+                "description": "Returns a Post object Identified by Id after Updating it",
+                "operationId": "updatePost",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Post Object that need to be applied",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/definitions/posts"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "A unique Id of Post",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Returns validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Created Post inside database.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Post"
+                ],
+                "summery": "Delete Post by Id",
+                "description": "Returns a Success message of post deletion",
+                "operationId": "deletePost",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "A unique Id of Post",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Returns validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Success message of deletion.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    }
+                }
+            }
+        },
+        "/comments/": {
+            "get": {
+                "tags": [
+                    "Comment"
+                ],
+                "summery": "Get a List of comments",
+                "description": "Returns a list of comments made on posts by users",
+                "operationId": "getComments",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": "Invalid post error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns a list of comments with populated data.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "post": {
+                                                "_id": {
+                                                    "type": "string"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "content": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "comment": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Comment"
+                ],
+                "summery": "Create a new Comment ",
+                "description": "Create a new Comment in db",
+                "operationId": "createComment",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "description": "An Comment object to be Inserted",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "post": {
+                                    "type": "string"
+                                },
+                                "comment": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a comment object just made by user.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "post": {
+                                            "type": "string"
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "comment": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/comments/{id}": {
+            "get": {
+                "tags": [
+                    "Comment"
+                ],
+                "summery": "Gets an object of comment ",
+                "description": "Returns a object of comment made on post by users",
+                "operationId": "getCommentById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "type": "string",
+                        "description": "A unique Id of Comment"
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": " Comment not found error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns an Comment object with populated data identified by it's id.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "_id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "username": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "post": {
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "content": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "comment": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "put" : {
+                "tags": ["Comment"],
+                "summery": "Gets an object of comment ",
+                "description": "Returns a object of comment made on post by users",
+                "operationId": "updateComment",
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "type": "string",
+                        "description": "A unique Id of Comment"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "description": "An Comment object to be Inserted",
+                        "schema": {
+                            "type" : "object",
+                            "properties" : {
+                                "comment" : { "type" : "string" }
+                            }
+                        }
+                    }
+                ],
+                "responses" : {
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": " Comment not found error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns a comment object just made by user.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "post": {
+                                            "type": "string"
+                                        },
+                                        "_id": {
+                                            "type": "string"
+                                        },
+                                        "comment": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "delete" : {
+                "tags": ["Comment"],
+                "summery": "Deletes an identified comment object form db ",
+                "description": "Returns A success deletion message",
+                "operationId": "deleteComment",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "type": "string",
+                        "description": "A unique Id of Comment"
+                    }
+                ],
+                "responses" : {
+                    "401": {
+                        "description": "Unauthorised or invalid token.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "404": {
+                        "description": " Comment not found error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    },
+                    "200" : {
+                        "description": "Success message of comment deletion.",
+                        "schema": {
+                            "$ref": "#/components/responses/common"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "user": {
+            "type": "object",
+            "required": [
+                "name",
+                "username",
+                "password"
+            ],
+            "properties": {
+                "id": {
+                    "description" : "Unique id of the user.",
+                    "type": "string"
+                },
+                "name": {
+                    "description" : "Name of the user.",
+                    "type": "string"
+                },
+                "username": {
+                    "description" : "Username of the user.",
+                    "type": "string"
+                },
+                "password": {
+                    "description" : "Password of the user.",
+                    "type": "string"
+                },
+                "comments": {
+                    "description" : "List of comments ids made my user.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "posts": {
+                    "description" : "List of post created by user.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "comment": {
+            "type": "object",
+            "required": [
+                "user",
+                "comment",
+                "post"
+            ],
+            "properties": {
+                "id": {
+                    "description" : "Unique id of comment.",
+                    "type": "string"
+                },
+                "user": {
+                    "description" : "Id of the user who made comment.",
+                    "type": "string"
+                },
+                "comment": {
+                    "description" : "The actual comment made by user.",
+                    "type": "string"
+                },
+                "post": {
+                    "description" : "Id of the post on which this comment has been made.",
+                    "type": "string"
+                }
+            }
+        },
+        "post": {
+            "type": "object",
+            "required": [
+                "user",
+                "title",
+                "content"
+            ],
+            "properties": {
+                "id": {
+                    "description" : "Unique id of post.",
+                    "type": "string"
+                },
+                "title": {
+                    "description" : "Title of the post.",
+                    "type": "string"
+                },
+                "content": {
+                    "description" : "Content of the post.",
+                    "type": "string"
+                },
+                "user": {
+                    "description" : "Id of the user who created this post.",
+                    "type": "string"
+                },
+                "comments": {
+                    "description" : "List of ids of the comments made on post.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "common": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "boolean"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
